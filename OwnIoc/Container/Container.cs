@@ -38,6 +38,13 @@ namespace OwnIoc.Container
             return this;
         }
 
+        public IContainer SelfRegisterSingletonType<I, T>() where I : class where T : class
+        {
+           this.RegisterSingletonType<I,T>();
+            RegistratedInstance = typeof (T);
+            return this;
+        }
+
         public T Resolve<T>()
         {
             return (T)Resolve(typeof(T));    

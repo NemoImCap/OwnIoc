@@ -23,9 +23,14 @@ namespace OwnIoc
 
 
             // testing singleton registration for class
-            container.SelfRegisterInstanceType<ITest2, ClassTest2>().SetContructorParams<ClassTest2>("number",1);
+
+            //container.RegisterSingletonType<ITest2, ClassTest2>();
+            container.SelfRegisterSingletonType<ITest2, ClassTest2>().SetContructorParams<ClassTest2>("number",34);
             ITest2 obj5 = container.Resolve<ITest2>();
+
+            ITest2 obj3 = container.Resolve<ITest2>();
             obj5.Print();
+            obj3.Print();
             Console.Read();
         }
     }

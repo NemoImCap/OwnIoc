@@ -32,6 +32,7 @@ namespace OwnIoc.Model
                 if (_objectsPool.ContainsKey(t.Name) == false)
                 {
                     obj = InstanceCreationService.GetNewObject(t, arguments);
+                    _objectsPool.Add(t.Name, obj);
                 }
                 else
                 {
