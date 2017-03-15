@@ -46,6 +46,7 @@
     <Compile Include="Interfaces\IContainer.cs" />
     <Compile Include="Model\InstanceCreationService.cs" />
     <Compile Include="Model\RegistrationModel.cs" />
+    <Compile Include="Model\ResolveObject.cs" />
     <Compile Include="Model\SingletonCreationService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -25,13 +25,13 @@ namespace OwnIoc.Model
             return instance;
         }
 
-        public static object GetNewObject(Type t, object[] arg)
+        public static object GetNewObject(Type t, object[] arg, object [] attributes = null)
         {
             object obj = null;
 
             try
             {
-                obj = Activator.CreateInstance(t, arg);
+                obj = attributes != null && attributes.Length != null ? Activator.CreateInstance(t, arg, attributes) : Activator.CreateInstance(t, arg);
             }
             catch (Exception ex)
             {

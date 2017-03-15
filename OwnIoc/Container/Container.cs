@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using OwnIoc.Enumiration;
@@ -14,7 +15,12 @@ namespace OwnIoc.Container
 {
     public class Container : IContainer
     {
-        Dictionary<Type, RegistrationModel> _instanceRegistration = new Dictionary<Type, RegistrationModel>(); 
+        Dictionary<Type, RegistrationModel> _instanceRegistration = new Dictionary<Type, RegistrationModel>();
+        private Dictionary<Type, string> _instanceParams = new Dictionary<Type, string>();
+        private Type RegistratedInstance = null;
+        private object _setValue = null;
+
+
         public void RegisterInstanceType<I, T>() where I : class where T : class
         {
             RegisterType<I, T>(Reg_Type.Instance);
@@ -25,9 +31,38 @@ namespace OwnIoc.Container
               RegisterType< I, T >(Reg_Type.Singleton);
         }
 
+        public IContainer SelfRegisterInstanceType<I, T>() where I : class where T : class
+        {
+            this.RegisterInstanceType<I,T>();
+            RegistratedInstance = typeof(T);
+            return this;
+        }
+
         public T Resolve<T>()
         {
             return (T)Resolve(typeof(T));    
+        }
+
+        public IContainer SetContructorParams<T>(string name, object value, Action<T,bool> expression = null) where T : class
+        {
+            _setValue = value;
+            Type typeToCreate = RegistratedInstance;
+            ConstructorInfo[] cons = typeToCreate.GetConstructors();
+            var contrField = cons.FirstOrDefault(x => x.CustomAttributes != null);
+            if (contrField != null)
+            {
+                ParameterInfo[] _params = contrField.GetParameters();
+                var firstParam = _params.FirstOrDefault(x => x.Name == name);
+                if (firstParam != null)
+                {
+                    var attributes = firstParam.Name;
+                    if (!string.IsNullOrEmpty(attributes) && attributes == name)
+                    {
+                      _instanceParams.Add(typeToCreate,attributes);
+                    }
+                }
+            }
+            return this;
         }
 
 
@@ -50,14 +85,6 @@ namespace OwnIoc.Container
                 {
                     Type typeToCreate = model.ObjectType;
                     ConstructorInfo[] cons = typeToCreate.GetConstructors();
-
-                    var test = cons[0].CustomAttributes;
-                    var test2 = cons[0].Attributes;
-                    var dependentCtor =
-                        cons.FirstOrDefault(
-                            x =>
-                                x.CustomAttributes.FirstOrDefault(
-                                    att => att.AttributeType == typeof (DependencyAttribute)) != null);
                     var contrField = cons.FirstOrDefault(x => x.CustomAttributes != null);
 
                     if (contrField == null)
@@ -66,20 +93,30 @@ namespace OwnIoc.Container
                     }
                     else
                     {
+                        object paramName = null;
                         ParameterInfo [] _params = contrField.GetParameters();
+                        if (_instanceParams.ContainsKey(RegistratedInstance))
+                        {
+                            paramName = _instanceParams[RegistratedInstance];
+                        }
                         if (!_params.Any())
                         {
                             obj = CreateInstance(model);
                         }
                         else
                         {
+
                             List<object> defindedParams = new List<object>();
+                            Dictionary<string, object> construct = new Dictionary<string, object>();
+
                             foreach (var info in _params)
                             {
-                                Type type = info.ParameterType;
+                                construct.Add(info.Name, this.Resolve(info.ParameterType));
                                 defindedParams.Add(this.Resolve(info.ParameterType));
                             }
-                            obj = CreateInstance(model, defindedParams.ToArray());
+                            construct[(string)paramName] = _setValue;
+                            var values = construct.Values.ToArray();
+                            obj = CreateInstance(model, values);
 
                         }
                     }
@@ -89,7 +126,7 @@ namespace OwnIoc.Container
         }
 
 
-        private object CreateInstance(RegistrationModel model, object[] arg = null)
+        private object CreateInstance(RegistrationModel model, object[] arg = null, object [] attributes = null)
         {
             object obj = null;
             Type type = model.ObjectType;
@@ -99,7 +136,7 @@ namespace OwnIoc.Container
             }
             if (model.RegType == Reg_Type.Instance)
             {
-                obj = InstanceCreationService.GetNewObject(type, arg);
+                obj = InstanceCreationService.GetNewObject(type, arg, attributes);
             }
             return obj;
         } 
