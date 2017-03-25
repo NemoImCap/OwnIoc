@@ -10,6 +10,13 @@ namespace OwnIoc.Model
     {
         public string Name { get; set; }
 
+        private int Age { get; set; }
+
+        public long Life
+        {
+            get { return (long) Age; }
+        }
+
         public ContainerAdapter(string name)
         {
             Name = name;
