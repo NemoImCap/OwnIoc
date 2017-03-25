@@ -16,8 +16,11 @@ namespace OwnIoc.Container
     public class Container : IContainer
     {
         Dictionary<Type, RegistrationModel> _instanceRegistration = new Dictionary<Type, RegistrationModel>();
+        //Saved Type and Contructro params name for creating
         private Dictionary<Type, string> _instanceParams = new Dictionary<Type, string>();
+        //Type was send in SelfRegisterMethods
         private Type RegistratedInstance = null;
+        //Temporary values for setting in created contructor
         private object _setValue = null;
 
 
@@ -34,6 +37,7 @@ namespace OwnIoc.Container
         public IContainer SelfRegisterInstanceType<I, T>() where I : class where T : class
         {
             this.RegisterInstanceType<I,T>();
+            //SetObject witch will be created
             RegistratedInstance = typeof(T);
             return this;
         }
@@ -41,6 +45,7 @@ namespace OwnIoc.Container
         public IContainer SelfRegisterSingletonType<I, T>() where I : class where T : class
         {
            this.RegisterSingletonType<I,T>();
+           //SetObject witch will be created
             RegistratedInstance = typeof (T);
             return this;
         }
@@ -65,6 +70,7 @@ namespace OwnIoc.Container
                     var attributes = firstParam.Name;
                     if (!string.IsNullOrEmpty(attributes) && attributes == name)
                     {
+                        //Add Type and founded contructor param
                       _instanceParams.Add(typeToCreate,attributes);
                     }
                 }
@@ -104,6 +110,7 @@ namespace OwnIoc.Container
                         ParameterInfo [] _params = contrField.GetParameters();
                         if (_instanceParams.ContainsKey(RegistratedInstance))
                         {
+                            //Get Contructror parametr Name for setting in creation
                             paramName = _instanceParams[RegistratedInstance];
                         }
                         if (!_params.Any())
@@ -118,9 +125,11 @@ namespace OwnIoc.Container
 
                             foreach (var info in _params)
                             {
+                                //Add all Params as Key = ContrName(Uniq), Create Resolved Object)
                                 construct.Add(info.Name, this.Resolve(info.ParameterType));
                                 defindedParams.Add(this.Resolve(info.ParameterType));
                             }
+                            //Find ContructorParametrs by Key
                             construct[(string)paramName] = _setValue;
                             var values = construct.Values.ToArray();
                             obj = CreateInstance(model, values);
@@ -132,7 +141,7 @@ namespace OwnIoc.Container
             return obj;
         }
 
-
+        //Create Instance Accoding type
         private object CreateInstance(RegistrationModel model, object[] arg = null, object [] attributes = null)
         {
             object obj = null;

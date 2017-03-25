@@ -35,6 +35,7 @@ namespace OwnIoc
         }
     }
 
+    //Test Classe1
     interface ITest1
     {
         void Print();
@@ -58,7 +59,7 @@ namespace OwnIoc
             Console.WriteLine("ClassName: {0}, FIRST CLASS HashCode: {1}, {2} , Age {3}", this.GetType().Name, this.GetHashCode(), this.StatusName, this.Age);
         }
     }
-
+    //Test Classe1
     interface ITest2
     {
         void Print();
