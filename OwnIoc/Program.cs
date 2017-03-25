@@ -12,25 +12,27 @@ namespace OwnIoc
     {
         static void Main(string[] args)
         {
-            IContainer container = new Container.Container();
 
+
+            IContainer container = new Container.Container();
             container.SelfRegisterInstanceType<ITest1, ClassTest1>().SetContructorParams<ClassTest1>("statusName","Teddy");
-            //var a = new ResolveObject<ClassTest1>();
-            // testing instance type resigtration for class
-            //container.RegisterInstanceType<ITest1, ClassTest1>();
             var obj1 = container.Resolve<ITest1>();
             obj1.Print();
 
 
             // testing singleton registration for class
-
-            //container.RegisterSingletonType<ITest2, ClassTest2>();
             container.SelfRegisterSingletonType<ITest2, ClassTest2>().SetContructorParams<ClassTest2>("number",34);
             ITest2 obj5 = container.Resolve<ITest2>();
-
             ITest2 obj3 = container.Resolve<ITest2>();
             obj5.Print();
             obj3.Print();
+
+
+            container.SelfRegisterSingletonType<ContainerAdapter,ContainerAdapter>().SetContructorParams<ContainerAdapter>("name","Frodo");
+
+            var o = container.Resolve<ContainerAdapter>();
+            var hash = o.GetHashCode();
+            Console.WriteLine(hash);
             Console.Read();
         }
     }

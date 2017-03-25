@@ -130,7 +130,10 @@ namespace OwnIoc.Container
                                 defindedParams.Add(this.Resolve(info.ParameterType));
                             }
                             //Find ContructorParametrs by Key
-                            construct[(string)paramName] = _setValue;
+                            if (!string.IsNullOrEmpty((string) paramName))
+                            {
+                                construct[(string) paramName] = _setValue;
+                            }
                             var values = construct.Values.ToArray();
                             obj = CreateInstance(model, values);
 

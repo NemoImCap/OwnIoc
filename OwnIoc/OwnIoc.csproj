@@ -44,6 +44,7 @@
     <Compile Include="Container\Container.cs" />
     <Compile Include="Enumiration\Reg_Type.cs" />
     <Compile Include="Interfaces\IContainer.cs" />
+    <Compile Include="Model\ContainerAdapter.cs" />
     <Compile Include="Model\InstanceCreationService.cs" />
     <Compile Include="Model\RegistrationModel.cs" />
     <Compile Include="Model\ResolveObject.cs" />
