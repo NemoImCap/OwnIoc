@@ -1,42 +1,39 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OwnIoc.Model
 {
     internal class InstanceCreationService
     {
-        private static InstanceCreationService instance = null;
+        private static readonly InstanceCreationService Instance;
 
         static InstanceCreationService()
         {
-            instance = new InstanceCreationService();
+            Instance = new InstanceCreationService();
         }
 
         private InstanceCreationService()
         {
-            
         }
 
         public static InstanceCreationService GetInstance()
         {
-            return instance;
+            return Instance;
         }
 
-        public static object GetNewObject(Type t, object[] arg, object [] attributes = null)
+        public static object GetNewObject(Type t, object[] arg, object[] attributes = null)
         {
             object obj = null;
 
             try
             {
-                obj = attributes != null && attributes.Length != null ? Activator.CreateInstance(t, arg, attributes) : Activator.CreateInstance(t, arg);
+                obj = attributes != null && attributes.Any()
+                    ? Activator.CreateInstance(t, arg, attributes)
+                    : Activator.CreateInstance(t, arg);
             }
             catch (Exception ex)
             {
-                
-               Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.Message);
             }
             return obj;
         }
