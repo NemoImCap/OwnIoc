@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Container\Container.cs" />
-    <Compile Include="Enumiration\Reg_Type.cs" />
+    <Compile Include="Enumiration\RegType.cs" />
     <Compile Include="Interfaces\IContainer.cs" />
     <Compile Include="Model\ContainerAdapter.cs" />
     <Compile Include="Model\InstanceCreationService.cs" />
